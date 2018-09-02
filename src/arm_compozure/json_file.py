@@ -25,11 +25,11 @@ class JsonFile(object):
 
     def __read_json(self):
         try:
-            r = requests.get(self.src, verify=False)
-            return r.json()
-        except ValueError:  # invalid URL
+            j = json.load(open(self.src))
+            return j
+        except IOError: # invalid file path
             try:
-                j = json.load(open(self.src))
-                return j
-            except IOError: # invalid file path
+                r = requests.get(self.src, verify=False)
+                return r.json()
+            except ValueError:  # invalid URL
                 raise ValueError('The JSON source location provided is nether a valid URI nor a valid local file path.')
