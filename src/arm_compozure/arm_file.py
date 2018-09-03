@@ -5,7 +5,7 @@ import requests
 import json
 import copy
 
-class JsonFile(object):
+class ArmFile(object):
     def __init__(self, src=None, dest=None):
         self.src = src
         self.dest = dest
@@ -24,6 +24,9 @@ class JsonFile(object):
         print("src: {}".format(self.src))
         print("dest: {}".format(self.dest))
         print("data: \n{}".format(json.dumps(self.__data, indent=4, sort_keys=True)))
+        print("orig_data: \n{}".format(json.dumps(self.__orig_data, indent=4, sort_keys=True)))
+        print("changed_values: {}".format(', '.join(self.__changed_values)))
+        print("change_log: \n{}".format(json.dumps(self.get_change_log(), indent=4, sort_keys=True)))
         # print(json.dumps(self, default=lambda o: o.__dict__, indent=4, sort_keys=True))
 
     def __read_json(self):
@@ -51,6 +54,20 @@ class JsonFile(object):
                 raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
         return copy.deepcopy(current) # return copy so value can't be changed outside class
 
+    def get_original_value(self, key):
+        if not key:
+            return self.__data
+        keys_list = key.split('.')
+        keys_visited = []
+        current = self.__orig_data
+        for k in keys_list:
+            keys_visited.append(k)
+            try:
+                current = current[k]
+            except (KeyError, TypeError) as e:
+                raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
+        return copy.deepcopy(current) # return copy so value can't be changed outside class
+
     def set_value(self, key, value):
         keys_list = key.split('.')
         keys_visited = []
@@ -68,3 +85,11 @@ class JsonFile(object):
             self.__changed_values.add(key)
         else:
             raise KeyError('Key \'{}\' does not exist'.format(key))
+
+    def get_change_log(self):
+        changes = {}
+        for key in self.__changed_values:
+            changes[key] = {}
+            changes[key]['old_value'] = self.get_original_value(key)
+            changes[key]['new_value'] = self.get_value(key)
+        return changes
