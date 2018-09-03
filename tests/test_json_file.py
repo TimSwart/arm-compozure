@@ -43,3 +43,23 @@ def test_get_value_error_2():
     j = JsonFile('tests/test_template.json')
     with pytest.raises(KeyError):
         j.get_value('parameters.storageAccountType.defaultValue.bad')
+
+def test_get_value_no_key():
+    j = JsonFile('tests/test_template.json')
+    assert j.get_value('') == j._JsonFile__data
+
+def test_set_value():
+    j = JsonFile('tests/test_template.json')
+    j.set_value('parameters.storageAccountType.defaultValue', 'changed')
+    assert 'changed' == j.get_value('parameters.storageAccountType.defaultValue')
+
+def test_set_value_bad_key():
+    j = JsonFile('tests/test_template.json')
+    with pytest.raises(KeyError):
+        j.set_value('parameters.storageAccountType.defaultValue.bad', 'changed')
+
+def test_set_value_log_change():
+    j = JsonFile('tests/test_template.json')
+    key = 'parameters.storageAccountType.defaultValue'
+    j.set_value(key, 'changed')
+    assert key in j._JsonFile__changed_values
