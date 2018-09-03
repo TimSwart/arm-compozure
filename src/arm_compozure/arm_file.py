@@ -81,7 +81,7 @@ class ArmFile(object):
             except (KeyError, TypeError) as e:
                 raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
         if last_key in current:
-            current[last_key] = value
+            current[last_key] = copy.deepcopy(value)
             self.__changed_values.add(key)
         else:
             raise KeyError('Key \'{}\' does not exist'.format(key))
