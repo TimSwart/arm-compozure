@@ -3,6 +3,7 @@
 
 import requests
 import json
+import copy
 
 class JsonFile(object):
     def __init__(self, src=None, dest=None):
@@ -10,6 +11,7 @@ class JsonFile(object):
         self.dest = dest
         self.__data = self.__read_json()
         self.__orig_data = self.__read_json()
+        self.__changed_values = set()
 
     def set_src(self, src):
         self.src = src
@@ -45,4 +47,15 @@ class JsonFile(object):
                 current = current[k]
             except (KeyError, TypeError) as e:
                 raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
-        return current
+        return copy.deepcopy(current)
+
+    def set_value(self, key):
+        keys_list = key.split('.')
+        keys_visited = []
+        current = self.__data
+        for k in keys_list:
+            keys_visited.append(k)
+            try:
+                current = current[k]
+            except (KeyError, TypeError) as e:
+                raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))

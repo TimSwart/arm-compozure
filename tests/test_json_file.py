@@ -28,6 +28,12 @@ def test_get_value_valid():
     j = JsonFile('tests/test_template.json')
     assert j.get_value('parameters.storageAccountType.defaultValue') == 'Standard_LRS'
 
+def test_get_value_changed_outside_of_class():
+    j = JsonFile('tests/test_template.json')
+    v = j.get_value('parameters.storageAccountType')
+    v['type'] = 'changed'
+    assert v != j.get_value('parameters.storageAccountType')
+
 def test_get_value_error():
     j = JsonFile('tests/test_template.json')
     with pytest.raises(KeyError):
