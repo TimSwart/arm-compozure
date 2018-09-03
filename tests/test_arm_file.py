@@ -3,6 +3,8 @@
 
 import pytest
 import sys
+import tempfile
+import json
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -89,3 +91,12 @@ def test_change_log():
     assert changes[key][new] == 'changed'
     assert changes[key2][old] == 'string'
     assert changes[key2][new] == 'updated'
+
+def test_write_file():
+    tmp_dir = tempfile.gettempdir()
+    tmp_file = '{}/test_out.json'.format(tmp_dir)
+    arm = ArmFile('tests/test_template.json', tmp_file)
+    arm.write_file()
+    with open(tmp_file, 'r') as f:
+        j = json.load(f)
+    assert j == arm._ArmFile__data

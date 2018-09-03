@@ -31,7 +31,8 @@ class ArmFile(object):
 
     def __read_json(self):
         try:
-            j = json.load(open(self.src))
+            with open(self.src, 'r') as f:
+                j = json.load(f)
             return j
         except IOError: # invalid file path
             try:
@@ -93,3 +94,9 @@ class ArmFile(object):
             changes[key]['old_value'] = self.get_original_value(key)
             changes[key]['new_value'] = self.get_value(key)
         return changes
+
+    def write_file(self):
+        if not self.dest:
+            raise ValueError('Missing destination path for write')
+        with open(self.dest, 'w') as outfile:
+            outfile.write(json.dumps(self.__data, indent=4, sort_keys=True))
