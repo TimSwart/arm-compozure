@@ -5,6 +5,7 @@ import pytest
 import sys
 import tempfile
 import json
+import copy
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -50,6 +51,17 @@ def test_get_value_no_key():
     arm = ArmFile('tests/test_template.json')
     assert arm.get_value('') == arm._ArmFile__data
 
+def test_get_value_list_index():
+    arm = ArmFile('tests/test_template.json')
+    key = 'resources'
+    assert arm.get_value(key, 0) == arm._ArmFile__data[key][0]
+
+def test_get_value_orig():
+    arm = ArmFile('tests/test_template.json')
+    arm.set_value('parameters.storageAccountType.defaultValue', 'changed')
+    assert 'changed' == arm.get_value('parameters.storageAccountType.defaultValue')
+    assert 'Standard_LRS' == arm.get_original_value('parameters.storageAccountType.defaultValue')
+
 def test_set_value():
     arm = ArmFile('tests/test_template.json')
     arm.set_value('parameters.storageAccountType.defaultValue', 'changed')
@@ -71,6 +83,18 @@ def test_set_value_list():
     assert changes[key][old] != changes[key][new]
     assert changes[key][new] == my_list
     assert arm.get_value(key) == my_list
+
+def test_set_value_list_index():
+    arm = ArmFile('tests/test_template.json')
+    key = 'resources'
+    my_dict = {"a": 1, "b": "string", "c": True}
+    arm.set_value(key, my_dict, 0)
+    changes = arm.get_change_log()
+    old = 'old_value'
+    new = 'new_value'
+    assert changes[key][old] != changes[key][new]
+    assert changes[key][new][0] == my_dict
+    assert arm.get_value(key, 0) == my_dict
 
 def test_set_value_log_change():
     arm = ArmFile('tests/test_template.json')

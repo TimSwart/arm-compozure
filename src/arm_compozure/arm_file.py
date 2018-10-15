@@ -41,35 +41,30 @@ class ArmFile(object):
             except ValueError:  # invalid URL
                 raise ValueError('The JSON source location provided is nether a valid URI nor a valid local file path.')
 
-    def get_value(self, key):
+    def __get_value(self, data, key, index=None):
         if not key:
-            return self.__data
+            return data
         keys_list = key.split('.')
         keys_visited = []
-        current = self.__data
+        current = data
         for k in keys_list:
             keys_visited.append(k)
             try:
                 current = current[k]
-            except (KeyError, TypeError) as e:
+            except (KeyError, TypeError):
                 raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
-        return copy.deepcopy(current) # return copy so value can't be changed outside class
+        if index is not None:
+            return copy.deepcopy(current[index])
+        else:
+            return copy.deepcopy(current) # return copy so value can't be changed outside class
 
-    def get_original_value(self, key):
-        if not key:
-            return self.__data
-        keys_list = key.split('.')
-        keys_visited = []
-        current = self.__orig_data
-        for k in keys_list:
-            keys_visited.append(k)
-            try:
-                current = current[k]
-            except (KeyError, TypeError) as e:
-                raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
-        return copy.deepcopy(current) # return copy so value can't be changed outside class
+    def get_value(self, key, index=None):
+        return self.__get_value(self.__data, key, index)
 
-    def set_value(self, key, value):
+    def get_original_value(self, key, index=None):
+        return self.__get_value(self.__orig_data, key, index)
+
+    def set_value(self, key, value, index=None):
         keys_list = key.split('.')
         keys_visited = []
         last_key = keys_list[-1]
@@ -79,10 +74,15 @@ class ArmFile(object):
             keys_visited.append(k)
             try:
                 current = current[k]
-            except (KeyError, TypeError) as e:
+            except (KeyError, TypeError):
                 raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
         if last_key in current:
-            current[last_key] = copy.deepcopy(value)
+            if index is not None:
+                print('test')
+                print(current[last_key][index])
+                current[last_key][index] = copy.deepcopy(value)
+            else:
+                current[last_key] = copy.deepcopy(value)
             self.__changed_values.add(key)
         else:
             raise KeyError('Key \'{}\' does not exist'.format(key))
