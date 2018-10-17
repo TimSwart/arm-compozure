@@ -5,7 +5,6 @@ import pytest
 import sys
 import tempfile
 import json
-import copy
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -124,3 +123,27 @@ def test_write_file():
     with open(tmp_file, 'r') as f:
         j = json.load(f)
     assert j == arm._ArmFile__data
+
+def test_key_exists_null():
+    arm = ArmFile('tests/test_template.json')
+    assert arm.key_exists('') == False
+
+def test_key_exists_valid_1():
+    arm = ArmFile('tests/test_template.json')
+    assert arm.key_exists('parameters') == True
+
+def test_key_exists_valid_2():
+    arm = ArmFile('tests/test_template.json')
+    assert arm.key_exists('parameters.storageAccountType') == True
+
+def test_key_exists_valid_3():
+    arm = ArmFile('tests/test_template.json')
+    assert arm.key_exists('parameters.storageAccountType.defaultValue') == True
+
+def test_key_exists_invalid_1():
+    arm = ArmFile('tests/test_template.json')
+    assert arm.key_exists('bad') == False
+
+def test_key_exists_invalid_2():
+    arm = ArmFile('tests/test_template.json')
+    assert arm.key_exists('parameters.bad') == False

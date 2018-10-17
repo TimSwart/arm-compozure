@@ -100,3 +100,13 @@ class ArmFile(object):
             raise ValueError('Missing destination path for write')
         with open(self.dest, 'w') as outfile:
             outfile.write(json.dumps(self.__data, indent=4, sort_keys=True))
+
+    def key_exists(self, key):
+        keys_list = key.split('.')
+        current = self.__data
+        for k in keys_list:
+            try:
+                current = current[k]
+            except (KeyError, TypeError):
+                return False
+        return True
