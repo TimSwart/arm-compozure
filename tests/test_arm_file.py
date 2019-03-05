@@ -20,7 +20,7 @@ def test_init_check_attribute_dest():
     assert hasattr(test, 'dest')
 
 def test_init_check_bad_src_link_url():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=ArmFile.Errors.BAD_SRC_PATH):
         ArmFile('badlink.json', 'test_template')
 
 def test_init_check_src_link_local_file():
@@ -38,12 +38,14 @@ def test_get_value_changed_outside_of_class():
 
 def test_get_value_error():
     arm = ArmFile('tests/test_template.json')
-    with pytest.raises(KeyError):
-        arm.get_value('parameters.storageAccountType.badValue')
+    key = 'parameters.storageAccountType.badValue'
+    with pytest.raises(KeyError, match=ArmFile.Errors.MISSING_KEY.format(key)):
+        arm.get_value(key)
 
 def test_get_value_error_2():
     arm = ArmFile('tests/test_template.json')
-    with pytest.raises(KeyError):
+    key = 'parameters.storageAccountType.defaultValue.bad'
+    with pytest.raises(KeyError, match=ArmFile.Errors.MISSING_KEY.format(key)):
         arm.get_value('parameters.storageAccountType.defaultValue.bad')
 
 def test_get_value_no_key():
@@ -68,8 +70,9 @@ def test_set_value():
 
 def test_set_value_bad_key():
     arm = ArmFile('tests/test_template.json')
-    with pytest.raises(KeyError):
-        arm.set_value('parameters.storageAccountType.defaultValue.bad', 'changed')
+    key = 'parameters.storageAccountType.defaultValue.bad'
+    with pytest.raises(KeyError, match=ArmFile.Errors.MISSING_KEY.format(key)):
+        arm.set_value(key, 'changed')
 
 def test_set_value_list():
     arm = ArmFile('tests/test_template.json')
