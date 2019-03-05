@@ -31,14 +31,3 @@ pip install -r requirements.txt
 ```
 pytest
 ```
-
-## TODO
-1. Address import path issue in param_file.py
-    - when running pytest, need to import ArmFile as:
-    ```
-     from src.arm_compozure.arm_file import ArmFile
-    ```
-    - when running python src/arm_compozure, need to import ArmFile as:
-    ```
-     from arm_file import ArmFile
-    ```

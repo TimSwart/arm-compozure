@@ -8,8 +8,8 @@ import json
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-from src.arm_compozure.arm_file import ArmFile
+import config
+from arm_compozure.arm_file import ArmFile
 
 def test_init_check_attribute_src():
     test = ArmFile('https://raw.githubusercontent.com/TimSwart/azure-quickstart-templates/master/101-storage-account-create/azuredeploy.json', 'test_template')

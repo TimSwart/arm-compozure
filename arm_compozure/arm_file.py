@@ -39,7 +39,7 @@ class ArmFile(object):
                 r = requests.get(self.src, verify=False)
                 return r.json()
             except ValueError:  # invalid URL
-                raise ValueError('The JSON source location provided is nether a valid URI nor a valid local file path.')
+                raise ValueError('The JSON source location provided is neither a valid URI nor a valid local file path.')
 
     def __get_value(self, data, key, index=None):
         if not key:
@@ -78,7 +78,6 @@ class ArmFile(object):
                 raise KeyError('Key \'{}\' does not exist'.format(('.').join(keys_visited)))
         if last_key in current:
             if index is not None:
-                print('test')
                 print(current[last_key][index])
                 current[last_key][index] = copy.deepcopy(value)
             else:

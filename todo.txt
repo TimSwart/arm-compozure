@@ -1,0 +1,4 @@
+ - Consider expanding set/get ArmFile functions to work with arrays
+	- right now can only get/set an entire array element at the final key, for example, can get/set param1.param2.param3[index], but can't get/set param1.param2[index].param3
+
+ - Add tag changes to change log (not currently tracking this because change log uses get/set functions that only accept keys, not array indexes)
